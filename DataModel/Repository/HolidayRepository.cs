@@ -49,6 +49,22 @@ public class HolidayRepository : GenericRepository<Holiday>, IHolidayRepository
             throw;
         }
     }
+    public async Task<Holiday> GetHolidayByColabIdAsync(long colabId)
+    {
+        try {
+            HolidayDataModel holidayDataModel = await _context.Set<HolidayDataModel>()
+                    .Include(c => c.holidayPeriods)
+                    .FirstAsync(c => c.colaboratorId==colabId);
+
+            Holiday holiday = _holidayMapper.ToDomain(holidayDataModel);
+
+            return holiday;
+        }
+        catch
+        {
+            throw;
+        }
+    }
 
     public async Task<Holiday> AddHolidayPeriod(Holiday holiday, List<string> errorMessages)
     {

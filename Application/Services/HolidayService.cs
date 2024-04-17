@@ -10,7 +10,7 @@ using Domain.Factory;
 using DataModel.Model;
 using Gateway;
 using System;
-
+using System.Collections;
 
 public class HolidayService {
 
@@ -97,6 +97,50 @@ public class HolidayService {
             return false;
         }
     }
+
+    public async Task<IEnumerable<HolidayPeriodDTO>> GetHolidayPeriodsOnHolidayById(long id, DateOnly startDate, DateOnly endDate,List<string> errorMessages)
+    {
+        
+        bool colabExists = await _colaboratorsIdRepository.ColaboratorExists(id);
+        
+        if(!colabExists) {
+            errorMessages.Add("Colab doesn't exist");
+            return null;
+        }
+
+        Holiday holiday = await _holidayRepository.GetHolidayByColabIdAsync(id);
+        bool hExists = await _holidayRepository.HolidayExists(holiday.Id);
+        if(!hExists) {
+            errorMessages.Add("Holiday doesn't exist exists");
+            return null;
+        }
+
+        List<HolidayPeriod> holidayPeriods = holiday.GetHolidayPeriodsDuring(startDate,endDate);
+        return HolidayPeriodDTO.ToDTO(holidayPeriods);
+
+
+    }
+    public async Task<List<long>> GetColabsComFeriasSuperioresAXDias(long xDias,List<string> errorMessages)
+    {
+        IEnumerable<long> lista = await _colaboratorsIdRepository.GetColaboratorsIdAsync();
+
+        List<long> colabsComFeriasSuperioresAXDias = new List<long>();
+        foreach(long colabId in lista){
+            Holiday holiday = await _holidayRepository.GetHolidayByColabIdAsync(colabId);
+            List<HolidayPeriod> holidayPeriods = holiday.GetHolidayPeriods();
+            foreach(HolidayPeriod hp in holidayPeriods){
+                int x  = hp.GetNumberOfDays();
+                if(x>xDias){
+                    colabsComFeriasSuperioresAXDias.Add(colabId);
+                    break;
+                }
+            }
+        }
+        return colabsComFeriasSuperioresAXDias;
+
+    }
+
+    
 
     /*public async Task<HolidayDTO> UpdateHoliday(HolidayDTO holidayDto, List<string> errorMessages)
     {

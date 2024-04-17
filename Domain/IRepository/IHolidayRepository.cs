@@ -11,5 +11,9 @@ public interface IHolidayRepository : IGenericRepository<Holiday>
 
     Task<Holiday> AddHoliday(Holiday holiday);
     Task<Holiday> UpdateHoliday(Holiday holiday,List<string> errorMessages);
+    Task<Holiday> GetHolidayByColabIdAsync(long colabId);
+    
+
+    
 
 }

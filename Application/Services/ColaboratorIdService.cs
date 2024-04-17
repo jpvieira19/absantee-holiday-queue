@@ -19,7 +19,11 @@ namespace Application.Services
 
         public async Task<long> Add(long colabId)
         {
-
+            bool colabExists = await _colaboratorsIdRepository.ColaboratorExists(colabId);
+        
+            if(colabExists) {
+                return 0;
+            }
             return await _colaboratorsIdRepository.Add(colabId);
         }
     }

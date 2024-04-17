@@ -11,6 +11,7 @@ namespace WebApi.Controllers
     public class HolidayController : ControllerBase
     {   
         private readonly HolidayService _holidayService;
+        private List<string> _errorMessages = new List<string>();
 
         public HolidayController(HolidayService holidayService)
         {
@@ -35,6 +36,30 @@ namespace WebApi.Controllers
                 return NotFound();
             }
             return Ok(holidayDTO);
+        }
+
+        // GET: api/Holiday/4
+        [HttpGet("{colabId}/periods")]
+        public async Task<ActionResult<List<HolidayPeriodDTO>>> GetHolidayPeriodsOnHolidayById(long colabId, DateOnly startDate, DateOnly endDate)
+        {
+            IEnumerable<HolidayPeriodDTO> holidayPeriodDTOs = await _holidayService.GetHolidayPeriodsOnHolidayById(colabId,startDate,endDate,_errorMessages);
+            if (holidayPeriodDTOs == null)
+            {
+                return NotFound();
+            }
+            return Ok(holidayPeriodDTOs);
+        }
+
+        // GET: api/Holiday/4
+        [HttpGet("{xDias}/colabsComFeriasSuperioresAXDias")]
+        public async Task<ActionResult<List<long>>> GetColabsComFeriasSuperioresAXDias(long xDias)
+        {
+            List<long> colabsComFeriasSuperioresAXDias = await _holidayService.GetColabsComFeriasSuperioresAXDias(xDias,_errorMessages);
+            if (colabsComFeriasSuperioresAXDias == null)
+            {
+                return NotFound();
+            }
+            return Ok(colabsComFeriasSuperioresAXDias);
         }
 
     }

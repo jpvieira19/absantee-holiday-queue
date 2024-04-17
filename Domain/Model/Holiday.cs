@@ -65,7 +65,7 @@ public class Holiday : IHoliday
 
 	public List<HolidayPeriod> GetHolidayPeriodsDuring(DateOnly startDate, DateOnly endDate)
 	{
-		return _holidayPeriods.Where(hp => hp.EndDate > startDate && hp.StartDate < endDate)
+		return _holidayPeriods.Where(hp => hp.EndDate < endDate && hp.StartDate > startDate)
 								// .Select(hp => new HolidayPeriod(hp.StartDate < startDate ? startDate : hp.StartDate,
 								// 			hp.EndDate > endDate ? endDate : hp.EndDate))
 								.ToList();
