@@ -12,9 +12,11 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 public class HolidayRepository : GenericRepository<Holiday>, IHolidayRepository
 {    
     HolidayMapper _holidayMapper;
-    public HolidayRepository(AbsanteeContext context, HolidayMapper mapper) : base(context!)
+    ColaboratorsIdMapper _colaboratorsIdMapper;
+    public HolidayRepository(AbsanteeContext context, HolidayMapper mapper,ColaboratorsIdMapper colaboratorsIdMapper) : base(context!)
     {
         _holidayMapper = mapper;
+        _colaboratorsIdMapper = colaboratorsIdMapper;
     }
 
     public async Task<IEnumerable<Holiday>> GetHolidaysAsync()
@@ -54,7 +56,7 @@ public class HolidayRepository : GenericRepository<Holiday>, IHolidayRepository
         try {
             HolidayDataModel holidayDataModel = await _context.Set<HolidayDataModel>()
                     .Include(c => c.holidayPeriods)
-                    .FirstAsync(c => c.colaboratorId==colabId);
+                    .FirstAsync(c => _colaboratorsIdMapper.ToDomain(c.colaboratorId)==colabId);
 
             Holiday holiday = _holidayMapper.ToDomain(holidayDataModel);
 

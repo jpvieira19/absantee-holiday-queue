@@ -39,7 +39,7 @@ namespace WebApi.Controllers
         }
 
         // GET: api/Holiday/4
-        [HttpGet("{colabId}/periods")]
+        [HttpGet("periods/{colabId}")]
         public async Task<ActionResult<List<HolidayPeriodDTO>>> GetHolidayPeriodsOnHolidayById(long colabId, DateOnly startDate, DateOnly endDate)
         {
             IEnumerable<HolidayPeriodDTO> holidayPeriodDTOs = await _holidayService.GetHolidayPeriodsOnHolidayById(colabId,startDate,endDate,_errorMessages);

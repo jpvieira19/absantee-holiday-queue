@@ -16,19 +16,19 @@ public class HolidayService {
 
     private readonly AbsanteeContext _context;
     private readonly IHolidayRepository _holidayRepository;
-
+    private readonly IHolidayPeriodRepository _holidayPeriodRepository;
     private readonly IColaboratorsIdRepository _colaboratorsIdRepository;
     private readonly IHolidayPeriodFactory _holidayPeriodFactory;
     private readonly HolidayAmpqGateway _holidayAmqpGateway;
 
 
     
-    public HolidayService(IHolidayRepository holidayRepository, IHolidayPeriodFactory holidayPeriodFactory, HolidayAmpqGateway holidayAmqpGateway,IColaboratorsIdRepository colaboratorsIdRepository) {
+    public HolidayService(IHolidayPeriodRepository holidayPeriodRepository,IHolidayRepository holidayRepository, IHolidayPeriodFactory holidayPeriodFactory, HolidayAmpqGateway holidayAmqpGateway,IColaboratorsIdRepository colaboratorsIdRepository) {
         _holidayRepository = holidayRepository;
         _holidayPeriodFactory = holidayPeriodFactory;
         _holidayAmqpGateway=holidayAmqpGateway;
         _colaboratorsIdRepository = colaboratorsIdRepository;
-
+        _holidayPeriodRepository = holidayPeriodRepository;
     }
 
     public async Task<IEnumerable<HolidayDTO>> GetAll()
@@ -98,19 +98,12 @@ public class HolidayService {
         }
     }
 
-    public async Task<IEnumerable<HolidayPeriodDTO>> GetHolidayPeriodsOnHolidayById(long id, DateOnly startDate, DateOnly endDate,List<string> errorMessages)
+    public async Task<IEnumerable<HolidayPeriodDTO>> GetHolidayPeriodsOnHolidayById(long colabId, DateOnly startDate, DateOnly endDate,List<string> errorMessages)
     {
-        
-        bool colabExists = await _colaboratorsIdRepository.ColaboratorExists(id);
-        
-        if(!colabExists) {
-            errorMessages.Add("Colab doesn't exist");
-            return null;
-        }
 
-        Holiday holiday = await _holidayRepository.GetHolidayByColabIdAsync(id);
-        bool hExists = await _holidayRepository.HolidayExists(holiday.Id);
-        if(!hExists) {
+        Holiday holiday = await _holidayRepository.GetHolidayByColabIdAsync(colabId);
+        
+        if(holiday==null) {
             errorMessages.Add("Holiday doesn't exist exists");
             return null;
         }
@@ -120,6 +113,8 @@ public class HolidayService {
 
 
     }
+    //fazer em vez disto, um get do repositório dos HolidayPeriods, getHolidayPeriodsByColabId no repo?,linha 133
+    //fazer o foreach todo no repo, passar tudo para o repositório da HolidayPeriod?
     public async Task<List<long>> GetColabsComFeriasSuperioresAXDias(long xDias,List<string> errorMessages)
     {
         IEnumerable<long> lista = await _colaboratorsIdRepository.GetColaboratorsIdAsync();
@@ -127,6 +122,7 @@ public class HolidayService {
         List<long> colabsComFeriasSuperioresAXDias = new List<long>();
         foreach(long colabId in lista){
             Holiday holiday = await _holidayRepository.GetHolidayByColabIdAsync(colabId);
+            
             List<HolidayPeriod> holidayPeriods = holiday.GetHolidayPeriods();
             foreach(HolidayPeriod hp in holidayPeriods){
                 int x  = hp.GetNumberOfDays();
