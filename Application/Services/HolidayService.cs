@@ -113,7 +113,7 @@ public class HolidayService {
 
 
     }
-    //fazer em vez disto, um get do repositório dos HolidayPeriods, getHolidayPeriodsByColabId no repo? ,linha 133
+    //fazer em vez disto, um get do repositório dos HolidayPeriods, getHolidayPeriodsByColabId no repo?,linha 133
     //fazer o foreach todo no repo, passar tudo para o repositório da HolidayPeriod?
     public async Task<List<long>> GetColabsComFeriasSuperioresAXDias(long xDias,List<string> errorMessages)
     {
