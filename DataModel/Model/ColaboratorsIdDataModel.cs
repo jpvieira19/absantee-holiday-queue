@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.Model;
 
 namespace DataModel.Model
 {
@@ -11,9 +12,9 @@ namespace DataModel.Model
 
         public ColaboratorsIdDataModel() {}
 
-        public ColaboratorsIdDataModel(long id)
+        public ColaboratorsIdDataModel(ColaboratorId colaboratorId)
         {
-            Id = id;
+            Id = colaboratorId.colabId;
         }
     }
 }

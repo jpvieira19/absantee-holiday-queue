@@ -26,10 +26,12 @@ public class HolidayMapper
     public Holiday ToDomain(HolidayDataModel holidayDM)
     {
         long id = holidayDM.Id;
-        long colabId = _colaboratorIdMapper.ToDomain(holidayDM.colaboratorId) ;
+        ColaboratorsIdDataModel colabId = holidayDM.colaboratorId;
+
+        long cId = colabId.Id;
         
 
-        Holiday holidayDomain = _holidayFactory.NewHoliday(id,colabId);
+        Holiday holidayDomain = _holidayFactory.NewHoliday(id,cId);
         if(holidayDM.holidayPeriods!=null){
             foreach (var holidayPeriods in holidayDM.holidayPeriods)
             {
@@ -57,12 +59,12 @@ public class HolidayMapper
 
     
 
-    public HolidayDataModel ToDataModel(Holiday holiday)
+    public HolidayDataModel ToDataModel(Holiday holiday, ColaboratorsIdDataModel colaboratorsIdDataModel)
     {
         var holidayDataModel = new HolidayDataModel
         {
             Id = holiday.Id,
-            colaboratorId = _colaboratorIdMapper.ToDataModel(holiday.GetColaborator()),
+            colaboratorId = colaboratorsIdDataModel,
             holidayPeriods = holiday.GetHolidayPeriods().Select(hp => _holidayPeriodMapper.ToDataModel(hp)).ToList()
         };
 

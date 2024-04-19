@@ -5,6 +5,7 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace WebApi.Controllers
 {
@@ -15,7 +16,7 @@ namespace WebApi.Controllers
         private readonly IConnection _connection;
         private readonly IModel _channel;
 
-        //private List<string> _errorMessages = new List<string>();
+        private List<string> _errorMessages = new List<string>();
 
         private string queueName;
  
@@ -46,19 +47,21 @@ namespace WebApi.Controllers
             
             consumer.Received += async (model, ea) =>
             {
-                var body = ea.Body.ToArray();
+                byte[] body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-                Console.WriteLine($" [x] Received {message}");
-                //_channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
-                if (message != null)
+                //_colaboratorIdService.Add(colaborador);
+                var colabResult = JsonConvert.DeserializeObject<long>(message);
+                var colaboratorIDDTO = new ColaboratorIdDTO
                 {
-                    using (var scope = _scopeFactory.CreateScope()){
-                        var colaboratorService = scope.ServiceProvider.GetRequiredService<ColaboratorIdService>();
-                        await colaboratorService.Add(long.Parse(message));
-                    }
-                    // Adicionar ao contexto e salvar
-                    //_colaboratorIdService.Add(colaborador);
-                }
+                    _colabId =colabResult,
+                };
+           
+ 
+ 
+                using (var scope = _scopeFactory.CreateScope()){
+                var colaboratorIdService = scope.ServiceProvider.GetRequiredService<ColaboratorIdService>();
+                await colaboratorIdService.Add(colaboratorIDDTO, _errorMessages);
+                };
             };
             
             _channel.BasicConsume(queue: queueName,

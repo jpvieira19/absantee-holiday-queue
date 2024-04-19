@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.DTO;
 using DataModel.Repository;
 using Domain.IRepository;
+using Domain.Model;
 
 namespace Application.Services
 {
@@ -17,14 +19,20 @@ namespace Application.Services
             _colaboratorsIdRepository = colaboratorsIdRepository;
         }
 
-        public async Task<long> Add(long colabId)
+        public async Task<ColaboratorIdDTO> Add(ColaboratorIdDTO colaboratorIdDto,List<string> errorMessages)
         {
-            bool colabExists = await _colaboratorsIdRepository.ColaboratorExists(colabId);
+
+            ColaboratorId colaboratorId = ColaboratorIdDTO.ToDomain(colaboratorIdDto);
+            bool colabExists = await _colaboratorsIdRepository.ColaboratorExists(colaboratorId.colabId);
         
             if(colabExists) {
-                return 0;
+                errorMessages.Add("Colab already exists");
+                return null;
             }
-            return await _colaboratorsIdRepository.Add(colabId);
+
+            colaboratorId = await _colaboratorsIdRepository.Add(colaboratorId);
+            ColaboratorIdDTO colaboratorIdDTO = ColaboratorIdDTO.ToDTO(colaboratorId);
+            return colaboratorIdDTO;
         }
     }
 }

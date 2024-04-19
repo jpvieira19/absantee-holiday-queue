@@ -117,18 +117,20 @@ public class HolidayService {
     //fazer o foreach todo no repo, passar tudo para o repositório da HolidayPeriod?
     public async Task<List<long>> GetColabsComFeriasSuperioresAXDias(long xDias,List<string> errorMessages)
     {
-        IEnumerable<long> lista = await _colaboratorsIdRepository.GetColaboratorsIdAsync();
+        IEnumerable<ColaboratorId> lista = await _colaboratorsIdRepository.GetColaboratorsIdAsync();
 
         List<long> colabsComFeriasSuperioresAXDias = new List<long>();
-        foreach(long colabId in lista){
-            Holiday holiday = await _holidayRepository.GetHolidayByColabIdAsync(colabId);
-            
-            List<HolidayPeriod> holidayPeriods = holiday.GetHolidayPeriods();
-            foreach(HolidayPeriod hp in holidayPeriods){
-                int x  = hp.GetNumberOfDays();
-                if(x>xDias){
-                    colabsComFeriasSuperioresAXDias.Add(colabId);
-                    break;
+        foreach(ColaboratorId colabId in lista){
+            Holiday holiday = await _holidayRepository.GetHolidayByColabIdAsync(colabId.colabId);
+
+            if(holiday != null){
+                List<HolidayPeriod> holidayPeriods = holiday.GetHolidayPeriods();
+                foreach(HolidayPeriod hp in holidayPeriods){
+                    int x  = hp.GetNumberOfDays();
+                    if(x>xDias){
+                        colabsComFeriasSuperioresAXDias.Add(colabId.colabId);
+                        break;
+                    }
                 }
             }
         }

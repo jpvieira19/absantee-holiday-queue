@@ -24,6 +24,7 @@ public class HolidayRepository : GenericRepository<Holiday>, IHolidayRepository
         try {
             IEnumerable<HolidayDataModel> holidaysDataModel = await _context.Set<HolidayDataModel>()
                     .Include(c => c.holidayPeriods)
+                    .Include(c => c.colaboratorId)
                     .ToListAsync();
 
             IEnumerable<Holiday> holidays = _holidayMapper.ToDomain(holidaysDataModel);
@@ -40,6 +41,7 @@ public class HolidayRepository : GenericRepository<Holiday>, IHolidayRepository
     {
         try {
             HolidayDataModel holidayDataModel = await _context.Set<HolidayDataModel>()
+                    .Include(c => c.colaboratorId)
                     .FirstAsync(c => c.Id==id);
 
             Holiday holiday = _holidayMapper.ToDomain(holidayDataModel);
@@ -56,7 +58,12 @@ public class HolidayRepository : GenericRepository<Holiday>, IHolidayRepository
         try {
             HolidayDataModel holidayDataModel = await _context.Set<HolidayDataModel>()
                     .Include(c => c.holidayPeriods)
-                    .FirstAsync(c => _colaboratorsIdMapper.ToDomain(c.colaboratorId)==colabId);
+                    .Include(c => c.colaboratorId)
+                    .FirstOrDefaultAsync(c => c.colaboratorId.Id==colabId);
+
+            if(holidayDataModel== null){
+                return null;
+            }
 
             Holiday holiday = _holidayMapper.ToDomain(holidayDataModel);
 
@@ -108,7 +115,10 @@ public class HolidayRepository : GenericRepository<Holiday>, IHolidayRepository
     public async Task<Holiday> AddHoliday(Holiday holiday)
     {
         try {
-            HolidayDataModel holidayDataModel = _holidayMapper.ToDataModel(holiday);
+
+            ColaboratorsIdDataModel colaboratorDataModel = await _context.Set<ColaboratorsIdDataModel>()
+                .FirstAsync(c => c.Id == holiday.GetColaborator());
+            HolidayDataModel holidayDataModel = _holidayMapper.ToDataModel(holiday,colaboratorDataModel);
 
             EntityEntry<HolidayDataModel> holidayDataModelEntityEntry = _context.Set<HolidayDataModel>().Add(holidayDataModel);
             

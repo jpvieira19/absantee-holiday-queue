@@ -17,13 +17,13 @@ public class ColaboratorsIdRepository : GenericRepository<ColaboratorsIdReposito
         _colaboratorsIdMapper = mapper;
     }
 
-    public async Task<IEnumerable<long>> GetColaboratorsIdAsync()
+    public async Task<IEnumerable<ColaboratorId>> GetColaboratorsIdAsync()
     {
         try {
             IEnumerable<ColaboratorsIdDataModel> colaboratorsIdDataModel = await _context.Set<ColaboratorsIdDataModel>()
                     .ToListAsync();
 
-            IEnumerable<long> colaboratorsId = _colaboratorsIdMapper.ToDomain(colaboratorsIdDataModel);
+            IEnumerable<ColaboratorId> colaboratorsId = _colaboratorsIdMapper.ToDomain(colaboratorsIdDataModel);
 
             return colaboratorsId;
         }
@@ -38,10 +38,10 @@ public class ColaboratorsIdRepository : GenericRepository<ColaboratorsIdReposito
         return await _context.Set<ColaboratorsIdDataModel>().AnyAsync(e => e.Id == id);
     }
 
-    public async Task<long> Add(long Id)
+    public async Task<ColaboratorId> Add(ColaboratorId colaboratorId)
     {
         try {
-            ColaboratorsIdDataModel colaboratorsIdDataModel = _colaboratorsIdMapper.ToDataModel(Id);
+            ColaboratorsIdDataModel colaboratorsIdDataModel = _colaboratorsIdMapper.ToDataModel(colaboratorId);
 
             EntityEntry<ColaboratorsIdDataModel> colaboratorIdDataModelEntityEntry = _context.Set<ColaboratorsIdDataModel>().Add(colaboratorsIdDataModel);
             
@@ -49,7 +49,7 @@ public class ColaboratorsIdRepository : GenericRepository<ColaboratorsIdReposito
 
             ColaboratorsIdDataModel colaboratorIdDataModelSaved = colaboratorIdDataModelEntityEntry.Entity;
 
-            long colaboratorIdSaved = _colaboratorsIdMapper.ToDomain(colaboratorIdDataModelSaved);
+            ColaboratorId colaboratorIdSaved = _colaboratorsIdMapper.ToDomain(colaboratorIdDataModelSaved);
 
             return colaboratorIdSaved;    
         }

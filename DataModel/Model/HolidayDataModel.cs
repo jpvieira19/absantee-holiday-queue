@@ -10,12 +10,12 @@ public class HolidayDataModel
 
     public HolidayDataModel() {}
 
-    public HolidayDataModel(Holiday holiday,HolidayPeriodMapper holidayPeriodMapper,ColaboratorsIdMapper colaboratorsIdMapper)
+    public HolidayDataModel(Holiday holiday,HolidayPeriodMapper holidayPeriodMapper,ColaboratorsIdDataModel colaboratorsIdDataModel)
     {
         Id = holiday.Id;
 
         // Assuming you have a mapper that converts from the domain Colaborator model to the data model
-        colaboratorId = colaboratorsIdMapper.ToDataModel(holiday.GetColaborator());
+        colaboratorId = colaboratorsIdDataModel;
         
         // And assuming your holiday periods need to be converted as well
         holidayPeriods = holiday.GetHolidayPeriods().Select(hp => holidayPeriodMapper.ToDataModel(hp)).ToList();
