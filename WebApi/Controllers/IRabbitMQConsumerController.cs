@@ -6,4 +6,5 @@ public interface IRabbitMQConsumerController
 {
     void StartConsuming();
     void StopConsuming();
+    void ConfigQueue(string queueName);
 }

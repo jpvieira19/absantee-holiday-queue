@@ -18,7 +18,7 @@ namespace WebApi.Controllers
 
         private List<string> _errorMessages = new List<string>();
 
-        private string queueName;
+        private string _queueName;
  
         public RabbitMQColabConsumerController(IServiceScopeFactory scopeFactory)
         {
@@ -28,12 +28,8 @@ namespace WebApi.Controllers
             _channel = _connection.CreateModel();
 
             _channel.ExchangeDeclare(exchange: "colab_logs", type: ExchangeType.Fanout);
-           
-            queueName = _channel.QueueDeclare().QueueName;
-
-            _channel.QueueBind(queue: queueName, exchange: "colab_logs", routingKey: "colabKey");
  
-            Console.WriteLine(" [*] Waiting for messages.");
+            Console.WriteLine(" [*] Waiting for messages from Colaborator.");
 
             
         }
@@ -50,10 +46,10 @@ namespace WebApi.Controllers
                 byte[] body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 //_colaboratorIdService.Add(colaborador);
-                var colabResult = JsonConvert.DeserializeObject<long>(message);
+                var colabResult = JsonConvert.DeserializeObject<ColaboratorIdDTO>(message);
                 var colaboratorIDDTO = new ColaboratorIdDTO
                 {
-                    _colabId =colabResult,
+                    Id =colabResult.Id,
                 };
            
  
@@ -61,12 +57,28 @@ namespace WebApi.Controllers
                 using (var scope = _scopeFactory.CreateScope()){
                 var colaboratorIdService = scope.ServiceProvider.GetRequiredService<ColaboratorIdService>();
                 await colaboratorIdService.Add(colaboratorIDDTO, _errorMessages);
+                Console.WriteLine("colaborator created");
                 };
             };
             
-            _channel.BasicConsume(queue: queueName,
+            _channel.BasicConsume(queue: _queueName,
                                 autoAck: true,
                                 consumer: consumer);
+        }
+
+         public void ConfigQueue(string queueName)
+        {
+            _queueName = queueName;
+
+            _channel.QueueDeclare(queue: _queueName,
+                                            durable: true,
+                                            exclusive: false,
+                                            autoDelete: false,
+                                            arguments: null);
+
+            _channel.QueueBind(queue: _queueName,
+                  exchange: "colab_logs",
+                  routingKey: string.Empty);
         }
  
         public void StopConsuming()

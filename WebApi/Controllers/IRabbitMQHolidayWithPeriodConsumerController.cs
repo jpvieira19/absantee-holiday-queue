@@ -7,4 +7,5 @@ public interface IRabbitMQHolidayWithPeriodConsumerController
 {
     void StartConsuming();
     void StopConsuming();
+    void ConfigQueue(string queueName);
 }

@@ -5,14 +5,14 @@ using Domain.Model;
 
 public class ColaboratorIdDTO
 {
-	public long _colabId { get; set; }
+	public long Id { get; set; }
 
     public ColaboratorIdDTO() {
 	}
 
 	public ColaboratorIdDTO(long colabId)
 	{
-		_colabId = colabId;
+		Id = colabId;
 	}
 
 	static public ColaboratorIdDTO ToDTO(ColaboratorId colaboradorId) {
@@ -43,7 +43,7 @@ public class ColaboratorIdDTO
 		}
 
 
-		ColaboratorId colaboratorId = new ColaboratorId(colaboratorIdDTO._colabId);
+		ColaboratorId colaboratorId = new ColaboratorId(colaboratorIdDTO.Id);
 
 		return colaboratorId;
 	}

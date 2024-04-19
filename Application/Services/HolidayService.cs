@@ -68,9 +68,6 @@ public class HolidayService {
 
         HolidayDTO holidayDTO = HolidayDTO.ToDTO(holiday);
 
-        // string holidayAmqpDTO = HolidayGatewayDTO.Serialize(holidayDTO);	
-        // _holidayAmqpGateway.Publish(holidayAmqpDTO);
-
         return holidayDTO;
     }
 

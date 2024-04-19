@@ -17,7 +17,7 @@ namespace WebApi.Controllers
         private readonly ConnectionFactory _factory;
         private readonly IConnection _connection;
         private readonly IModel _channel;
-        private string queueName;
+        private string _queueName;
         private List<string> _errorMessages = new List<string>();
  
         public RabbitMQHolidayWithPeriodConsumerController(IServiceScopeFactory scopeFactory)
@@ -28,17 +28,12 @@ namespace WebApi.Controllers
             _channel = _connection.CreateModel();
  
             _channel.ExchangeDeclare(exchange: "holiday_WithHolidayPeriod_logs", type: ExchangeType.Fanout);
-           
-            queueName = _channel.QueueDeclare().QueueName;
  
-            _channel.QueueBind(queue: queueName, exchange: "holiday_WithHolidayPeriod_logs", routingKey: "holiday_WithHolidayPeriod_Key");
- 
-            Console.WriteLine(" [*] Waiting for messages.");
+            Console.WriteLine(" [*] Waiting for messages from holidayWithPeriod.");
         }
 
         public void StartConsuming()
         {
-            Console.WriteLine("holidays");
            
             var consumer = new EventingBasicConsumer(_channel);
            
@@ -62,10 +57,25 @@ namespace WebApi.Controllers
                 //await holidayService.UpdateHoliday(holidayDTO, _errorMessages);
                 };
             };
-            _channel.BasicConsume(queue: queueName,
+            _channel.BasicConsume(queue: _queueName,
                                 autoAck: true,
                                 consumer: consumer);
        
+        }
+
+        public void ConfigQueue(string queueName)
+        {
+            _queueName = queueName;
+
+            _channel.QueueDeclare(queue: _queueName,
+                                            durable: true,
+                                            exclusive: false,
+                                            autoDelete: false,
+                                            arguments: null);
+
+            _channel.QueueBind(queue: _queueName,
+                  exchange: "holiday_WithHolidayPeriod_logs",
+                  routingKey: string.Empty);
         }
  
         public void StopConsuming()

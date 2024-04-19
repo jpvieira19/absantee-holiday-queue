@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using DataModel.Repository;
+using Application.Services;
 
 namespace Domain
 {
@@ -24,6 +25,10 @@ namespace Domain
 				{
 					options.UseSqlServer(Configuration["ConnectionString"]);
 				});
+			services.AddScoped<HolidayService>();
+			services.AddScoped<ColaboratorIdService>();
+			services.AddScoped<HolidayPeriodService>();
+
 		}
 
 		public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
