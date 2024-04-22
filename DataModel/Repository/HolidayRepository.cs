@@ -41,7 +41,8 @@ public class HolidayRepository : GenericRepository<Holiday>, IHolidayRepository
     {
         try {
             HolidayDataModel holidayDataModel = await _context.Set<HolidayDataModel>()
-                    .Include(c => c.colaboratorId)
+                    .Include(c => c.colaboratorId.Id)
+                    .Include(c => c.holidayPeriods)
                     .FirstAsync(c => c.Id==id);
 
             Holiday holiday = _holidayMapper.ToDomain(holidayDataModel);

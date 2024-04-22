@@ -28,7 +28,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AbsanteeContext>(opt =>
     //opt.UseInMemoryDatabase("AbsanteeList")
     //opt.UseSqlite("Data Source=AbsanteeDatabase.sqlite")
-    opt.UseSqlite(Host.CreateApplicationBuilder().Configuration.GetConnectionString(args[0]))
+    opt.UseSqlite(Host.CreateApplicationBuilder().Configuration.GetConnectionString(holidayQueueName))
     );
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -98,6 +98,6 @@ int getPort(string name)
     // Implement logic to map queue name to a unique port number
     // Example: Assign a unique port number based on the queue name suffix
     int basePort = 5010; // Start from port 5000
-    int queueIndex = int.Parse(name.Substring(21)); // Extract the numeric part of the queue name (assuming it starts with 'Q')
+    int queueIndex = int.Parse(name.Substring(2)); // Extract the numeric part of the queue name
     return basePort + queueIndex;
 }

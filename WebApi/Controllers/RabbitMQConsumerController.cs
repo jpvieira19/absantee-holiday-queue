@@ -68,6 +68,7 @@ namespace WebApi.Controllers
                 using (var scope = _scopeFactory.CreateScope()){
                     var holidayService = scope.ServiceProvider.GetRequiredService<HolidayService>();
                     await holidayService.Add(holidayDTO, _errorMessages);
+                    Console.WriteLine("holiday criada");
                 };
             };
             _channel.BasicConsume(queue: _queueName,
