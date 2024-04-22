@@ -60,7 +60,7 @@ namespace WebApi.Controllers
                 {
                     Id = holidayResult.Id,
                     _colabId = holidayResult._colabId,
-                    _holidayPeriods = holidayResult._holidayPeriods
+                    _holidayPeriod = holidayResult._holidayPeriod
                 };
            
  

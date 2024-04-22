@@ -16,19 +16,17 @@ public class HolidayService {
 
     private readonly AbsanteeContext _context;
     private readonly IHolidayRepository _holidayRepository;
-    private readonly IHolidayPeriodRepository _holidayPeriodRepository;
     private readonly IColaboratorsIdRepository _colaboratorsIdRepository;
     private readonly IHolidayPeriodFactory _holidayPeriodFactory;
     private readonly HolidayAmpqGateway _holidayAmqpGateway;
 
 
     
-    public HolidayService(IHolidayPeriodRepository holidayPeriodRepository,IHolidayRepository holidayRepository, IHolidayPeriodFactory holidayPeriodFactory, HolidayAmpqGateway holidayAmqpGateway,IColaboratorsIdRepository colaboratorsIdRepository) {
+    public HolidayService(IHolidayRepository holidayRepository, IHolidayPeriodFactory holidayPeriodFactory, HolidayAmpqGateway holidayAmqpGateway,IColaboratorsIdRepository colaboratorsIdRepository) {
         _holidayRepository = holidayRepository;
         _holidayPeriodFactory = holidayPeriodFactory;
         _holidayAmqpGateway=holidayAmqpGateway;
         _colaboratorsIdRepository = colaboratorsIdRepository;
-        _holidayPeriodRepository = holidayPeriodRepository;
     }
 
     public async Task<IEnumerable<HolidayDTO>> GetAll()
@@ -71,31 +69,8 @@ public class HolidayService {
         return holidayDTO;
     }
 
-    public async Task<bool> AddHolidayPeriod(long id,HolidayPeriodDTO holidayPeriodDTO,List<string> errorMessages)
-    {
 
-
-        Holiday holiday = await _holidayRepository.GetHolidayByIdAsync(id);
-
-        if(holiday!=null)
-        {
-            HolidayDTO.UpdateToDomain(holidayPeriodDTO,_holidayPeriodFactory,holiday);
-            
-            holiday = await _holidayRepository.AddHolidayPeriod(holiday, errorMessages);
-
-            HolidayDTO holidayDTO = HolidayDTO.ToDTO(holiday);
-
-            return true;
-        }
-        else
-        {
-            errorMessages.Add("Not found");
-
-            return false;
-        }
-    }
-
-    public async Task<IEnumerable<HolidayPeriodDTO>> GetHolidayPeriodsOnHolidayById(long colabId, DateOnly startDate, DateOnly endDate,List<string> errorMessages)
+    /*public async Task<IEnumerable<HolidayPeriodDTO>> GetHolidayPeriodsOnHolidayById(long colabId, DateOnly startDate, DateOnly endDate,List<string> errorMessages)
     {
 
         Holiday holiday = await _holidayRepository.GetHolidayByColabIdAsync(colabId);
@@ -109,10 +84,10 @@ public class HolidayService {
         return HolidayPeriodDTO.ToDTO(holidayPeriods);
 
 
-    }
+    }*/
     //fazer em vez disto, um get do repositório dos HolidayPeriods, getHolidayPeriodsByColabId no repo?,linha 133
     //fazer o foreach todo no repo, passar tudo para o repositório da HolidayPeriod?
-    public async Task<List<long>> GetColabsComFeriasSuperioresAXDias(long xDias,List<string> errorMessages)
+    /*public async Task<List<long>> GetColabsComFeriasSuperioresAXDias(long xDias,List<string> errorMessages)
     {
         IEnumerable<ColaboratorId> lista = await _colaboratorsIdRepository.GetColaboratorsIdAsync();
 
@@ -133,46 +108,10 @@ public class HolidayService {
         }
         return colabsComFeriasSuperioresAXDias;
 
-    }
+    }*/
 
     
 
-    /*public async Task<HolidayDTO> UpdateHoliday(HolidayDTO holidayDto, List<string> errorMessages)
-    {
-        // Verifica se a Holiday existe
-        bool exists = await _holidayRepository.HolidayExists(holidayDto.Id);
-        if (!exists)
-        {
-            errorMessages.Add("Holiday does not exist");
-            return null;
-        }
-
-        // Verifica se o colaborador existe
-        bool colabExists = await _colaboratorsIdRepository.ColaboratorExists(holidayDto._colabId);
-        if (!colabExists)
-        {
-            errorMessages.Add("Colab doesn't exist");
-            return null;
-        }
-
-        IEnumerable<HolidayPeriodDTO> holidayPeriodDTOs = holidayDto._holidayPeriods;
-// Converte DTO para o domínio
-        Holiday holiday = HolidayDTO.ToDomain(holidayDto);
-
-        
-        HolidayDTO.UpdateToDomain(holidayPeriodDTOs,_holidayPeriodFactory,holiday);
-
-        // Atualiza a Holiday
-        holiday = await _holidayRepository.UpdateHoliday(holiday,errorMessages);
-
-        // Converte o domínio de volta para DTO
-        HolidayDTO updatedHolidayDTO = HolidayDTO.ToDTO(holiday);
-
-        // Aqui você pode adicionar lógica para publicar a atualização para RabbitMQ se necessário
-        // string holidayAmqpDTO = HolidayGatewayDTO.Serialize(updatedHolidayDTO);
-        // _holidayAmqpGateway.Publish(holidayAmqpDTO);
-
-        return updatedHolidayDTO;
-    }*/
+    
 
 }

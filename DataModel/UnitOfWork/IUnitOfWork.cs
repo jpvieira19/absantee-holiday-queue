@@ -8,7 +8,5 @@ public interface IUnitOfWork : IDisposable
 
     IHolidayRepository HolidayRepository { get; }
 
-    IHolidayPeriodRepository HolidayPeriodRepository { get; }
-
     Task<int> CompleteAsync();
 }

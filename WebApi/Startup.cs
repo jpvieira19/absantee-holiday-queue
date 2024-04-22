@@ -27,7 +27,6 @@ namespace Domain
 				});
 			services.AddScoped<HolidayService>();
 			services.AddScoped<ColaboratorIdService>();
-			services.AddScoped<HolidayPeriodService>();
 
 		}
 

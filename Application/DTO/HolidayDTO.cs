@@ -8,23 +8,23 @@ public class HolidayDTO
 	public long Id { get; set; }
 	public long _colabId{ get; set; }
 
-	public IEnumerable<HolidayPeriodDTO> _holidayPeriods { get; set; }
+	public HolidayPeriodDTO _holidayPeriod { get; set; }
 
     public HolidayDTO() {
 	}
 
-	public HolidayDTO(long colabId,long id,List<HolidayPeriodDTO> holidayPeriods)
+	public HolidayDTO(long colabId,long id,HolidayPeriodDTO holidayPeriod)
 	{
 		Id = id;
 		_colabId = colabId;
-		_holidayPeriods = holidayPeriods;
+		_holidayPeriod = holidayPeriod;
 	}
 
 	static public HolidayDTO ToDTO(Holiday holiday) {
 		long idColab = holiday.GetColaborator();
 		long id = holiday.Id;
-		List <HolidayPeriodDTO> holidayPeriodsDTO = HolidayPeriodDTO.ToDTO(holiday.HolidayPeriod).ToList();
-		HolidayDTO holidayDTO = new HolidayDTO(idColab,id,holidayPeriodsDTO);
+		HolidayPeriodDTO holidayPeriodDTO = HolidayPeriodDTO.ToDTO(holiday.HolidayPeriod);
+		HolidayDTO holidayDTO = new HolidayDTO(idColab,id,holidayPeriodDTO);
 
 		return holidayDTO;
 	}
@@ -49,9 +49,9 @@ public class HolidayDTO
 			throw new ArgumentException("holidayDTO must not be null");
 		}
 
-		List<HolidayPeriod> holidayPeriods = holidayDTO._holidayPeriods.Select(HolidayPeriodDTO.ToDomain).ToList();
+		HolidayPeriod holidayPeriod = HolidayPeriodDTO.ToDomain(holidayDTO._holidayPeriod);
 
-		Holiday holiday = new Holiday(holidayDTO.Id,holidayDTO._colabId,holidayPeriods);
+		Holiday holiday = new Holiday(holidayDTO.Id,holidayDTO._colabId,holidayPeriod);
 
 		
 		// foreach (var periodDTO in holidayDTO.HolidayPeriods)
@@ -61,14 +61,5 @@ public class HolidayDTO
 		// }
 
 		return holiday;
-	}
-
-	static public Holiday UpdateToDomain(HolidayPeriodDTO holidayPeriodDTO,IHolidayPeriodFactory holidayPeriodFactory,Holiday holiday) {
-
-		
-		holiday.AddHolidayPeriod(holidayPeriodFactory,holidayPeriodDTO.StartDate,holidayPeriodDTO.EndDate);
-		
-		return holiday;
-
 	}
 }
