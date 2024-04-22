@@ -28,39 +28,38 @@ namespace WebApi.Controllers
 
         // GET: api/Holiday/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<HolidayDTO>> GetHolidayById(long id)
+        public async Task<ActionResult<IEnumerable<HolidayDTO>>> GetHolidaysById(long id)
         {
-            var holidayDTO = await _holidayService.GetHolidayById(id);
-            if (holidayDTO == null)
+             IEnumerable<HolidayDTO> holidaysDTO = await _holidayService.GetHolidayById(id);
+            if (holidaysDTO == null)
             {
                 return NotFound();
             }
-            return Ok(holidayDTO);
+            return Ok(holidaysDTO);
         }
 
         // GET: api/Holiday/4
         [HttpGet("periods/{colabId}")]
         public async Task<ActionResult<List<HolidayPeriodDTO>>> GetHolidayPeriodsOnHolidayById(long colabId, DateOnly startDate, DateOnly endDate)
         {
-            /*IEnumerable<HolidayPeriodDTO> holidayPeriodDTOs = await _holidayService.GetHolidayPeriodsOnHolidayById(colabId,startDate,endDate,_errorMessages);
+            IEnumerable<HolidayPeriodDTO> holidayPeriodDTOs = await _holidayService.GetHolidayPeriodsOnHolidayById(colabId,startDate,endDate,_errorMessages);
             if (holidayPeriodDTOs == null)
             {
                 return NotFound();
             }
-            return Ok(holidayPeriodDTOs);*/
-            return Ok();
+            return Ok(holidayPeriodDTOs);
         }
 
         // GET: api/Holiday/4
         [HttpGet("{xDias}/colabsComFeriasSuperioresAXDias")]
         public async Task<ActionResult<List<long>>> GetColabsComFeriasSuperioresAXDias(long xDias)
         {
-            /*List<long> colabsComFeriasSuperioresAXDias = await _holidayService.GetColabsComFeriasSuperioresAXDias(xDias,_errorMessages);
+            List<long> colabsComFeriasSuperioresAXDias = await _holidayService.GetColabsComFeriasSuperioresAXDias(xDias,_errorMessages);
             if (colabsComFeriasSuperioresAXDias == null)
             {
                 return NotFound();
             }
-            return Ok(colabsComFeriasSuperioresAXDias);*/
+            return Ok(colabsComFeriasSuperioresAXDias);
             return Ok();
         }
 

@@ -36,36 +36,38 @@ public class HolidayRepository : GenericRepository<Holiday>, IHolidayRepository
         }
     }
 
-    public async Task<Holiday> GetHolidayByIdAsync(long id)
+    public async Task<IEnumerable<Holiday>> GetHolidaysByIdAsync(long id)
     {
         try {
-            HolidayDataModel holidayDataModel = await _context.Set<HolidayDataModel>()
+            IEnumerable<HolidayDataModel> holidayDataModel = await _context.Set<HolidayDataModel>()
                     .Include(c => c.colaboratorId)
-                    .FirstAsync(c => c.Id==id);
+                    .Where(c => c.Id==id)
+                    .ToListAsync();
 
-            Holiday holiday = _holidayMapper.ToDomain(holidayDataModel);
+            IEnumerable<Holiday> holidays = _holidayMapper.ToDomain(holidayDataModel);
 
-            return holiday;
+            return holidays;
         }
         catch
         {
             throw;
         }
     }
-    public async Task<Holiday> GetHolidayByColabIdAsync(long colabId)
+    public async Task<IEnumerable<Holiday>> GetHolidaysByColabIdAsync(long colabId)
     {
         try {
-            HolidayDataModel holidayDataModel = await _context.Set<HolidayDataModel>()
+            IEnumerable<HolidayDataModel> holidaysDataModel = await _context.Set<HolidayDataModel>()
                     .Include(c => c.colaboratorId)
-                    .FirstOrDefaultAsync(c => c.colaboratorId.Id==colabId);
+                    .Where(c => c.colaboratorId.Id==colabId)
+                    .ToListAsync();
 
-            if(holidayDataModel== null){
+            if(holidaysDataModel== null){
                 return null;
             }
 
-            Holiday holiday = _holidayMapper.ToDomain(holidayDataModel);
+            IEnumerable<Holiday> holidays = _holidayMapper.ToDomain(holidaysDataModel);
 
-            return holiday;
+            return holidays;
         }
         catch
         {

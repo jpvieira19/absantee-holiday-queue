@@ -11,6 +11,8 @@ using DataModel.Model;
 using Gateway;
 using System;
 using System.Collections;
+using Microsoft.IdentityModel.Tokens;
+
 
 public class HolidayService {
 
@@ -38,13 +40,13 @@ public class HolidayService {
         return holidaysDTO;
     }
 
-    public async Task<HolidayDTO> GetHolidayById(long id)
+    public async Task<IEnumerable<HolidayDTO>> GetHolidayById(long id)
     {    
-        Holiday holiday = await _holidayRepository.GetHolidayByIdAsync(id);
+        IEnumerable<Holiday> holidays = await _holidayRepository.GetHolidaysByIdAsync(id);
 
-        HolidayDTO holidayDTO = HolidayDTO.ToDTO(holiday);
+        IEnumerable<HolidayDTO> holidaysDTO = HolidayDTO.ToDTO(holidays);
 
-        return holidayDTO;
+        return holidaysDTO;
     }
 
     public async Task<HolidayDTO> Add(HolidayDTO holidayDto, List<string> errorMessages)
@@ -70,45 +72,51 @@ public class HolidayService {
     }
 
 
-    /*public async Task<IEnumerable<HolidayPeriodDTO>> GetHolidayPeriodsOnHolidayById(long colabId, DateOnly startDate, DateOnly endDate,List<string> errorMessages)
+    public async Task<IEnumerable<HolidayPeriodDTO>> GetHolidayPeriodsOnHolidayById(long colabId, DateOnly startDate, DateOnly endDate,List<string> errorMessages)
     {
 
-        Holiday holiday = await _holidayRepository.GetHolidayByColabIdAsync(colabId);
+        IEnumerable<Holiday> holidays = await _holidayRepository.GetHolidaysByColabIdAsync(colabId);
+
+        List<HolidayPeriod> holidayPeriods = new List<HolidayPeriod>();
         
-        if(holiday==null) {
-            errorMessages.Add("Holiday doesn't exist exists");
+        if(holidays.IsNullOrEmpty()) {
+            errorMessages.Add("No holidays found for this colaborator.");
             return null;
         }
 
-        List<HolidayPeriod> holidayPeriods = holiday.GetHolidayPeriodsDuring(startDate,endDate);
+        foreach(Holiday holiday in holidays){
+            HolidayPeriod holidayPeriod = holiday.HolidayPeriod;
+            if(holidayPeriod.EndDate > startDate && holidayPeriod.StartDate< endDate){
+                holidayPeriods.Add(holidayPeriod);
+            }
+        }
+        
         return HolidayPeriodDTO.ToDTO(holidayPeriods);
 
 
-    }*/
+    }
     //fazer em vez disto, um get do repositório dos HolidayPeriods, getHolidayPeriodsByColabId no repo?,linha 133
     //fazer o foreach todo no repo, passar tudo para o repositório da HolidayPeriod?
-    /*public async Task<List<long>> GetColabsComFeriasSuperioresAXDias(long xDias,List<string> errorMessages)
+    public async Task<List<long>> GetColabsComFeriasSuperioresAXDias(long xDias,List<string> errorMessages)
     {
         IEnumerable<ColaboratorId> lista = await _colaboratorsIdRepository.GetColaboratorsIdAsync();
 
         List<long> colabsComFeriasSuperioresAXDias = new List<long>();
-        foreach(ColaboratorId colabId in lista){
-            Holiday holiday = await _holidayRepository.GetHolidayByColabIdAsync(colabId.colabId);
 
-            if(holiday != null){
-                List<HolidayPeriod> holidayPeriods = holiday.GetHolidayPeriods();
-                foreach(HolidayPeriod hp in holidayPeriods){
-                    int x  = hp.GetNumberOfDays();
-                    if(x>xDias){
-                        colabsComFeriasSuperioresAXDias.Add(colabId.colabId);
-                        break;
-                    }
+        foreach(ColaboratorId colabId in lista){
+            IEnumerable<Holiday> holidays = await _holidayRepository.GetHolidaysByColabIdAsync(colabId.colabId);
+
+            foreach(Holiday holiday in holidays){
+                long days = holiday.HolidayPeriod.GetNumberOfDays();
+                if(days>xDias){
+                    colabsComFeriasSuperioresAXDias.Add(colabId.colabId);
+                    break;
                 }
             }
         }
         return colabsComFeriasSuperioresAXDias;
 
-    }*/
+    }
 
     
 
